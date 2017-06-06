@@ -60,6 +60,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -90,6 +93,10 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mChatPhotosStorageReference;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
+    public GetTiming mGetTiming;
+
+    //Beeper timed
+
 
 
     @Override
@@ -99,9 +106,39 @@ public class MainActivity extends AppCompatActivity {
 
         //TEST
         final LogHandling logHandling = new LogHandling();
-        JSONObject newObj = logHandling.newEntry(1, 123.123);
+        final JSONObject newObj = logHandling.newEntry(1, 123.123);
+
+        final GetTiming getTiming = new GetTiming();
+//        double timed = getTiming.giveTiming();
 
         Log.d("Json: ", newObj.toString());
+
+
+        //pool executor?
+
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+//        Log.v("TESTTTTTTTT: ", String.valueOf(timed));
+
+        scheduler.scheduleAtFixedRate
+                (new Runnable() {
+                    public void run() {
+                        long timed = getTiming.giveTiming();
+                        double seconds = timed / 1000000000.0;
+                        Log.d("Timing nano: ", String.valueOf(timed));
+                        Log.d("Timing seconds: ", String.valueOf(seconds));
+                    }
+                }, 0, 1000000000, TimeUnit.NANOSECONDS);
+
+
+        //Scheduled executor ????
+//        new Thread(new Runnable(){
+//            public void run() {
+//                Log.d("Thread executpr", "Thread ex");
+//            }
+//        }).start();
+
+
 
 
         mUsername = ANONYMOUS;
@@ -292,6 +329,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
                     mMessageAdapter.add(friendlyMessage);
+                    Log.d("11111111111111111", "RECEIVED");
                 }
 
                 @Override
