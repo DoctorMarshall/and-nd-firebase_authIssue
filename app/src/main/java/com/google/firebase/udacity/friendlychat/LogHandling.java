@@ -13,20 +13,22 @@ import org.json.JSONObject;
 public class LogHandling {
     JSONArray newLog = new JSONArray();
     JSONObject newEntry = new JSONObject();
-    private int newID;
+    private String newID;
     private double newTime;
+    private double receivedTime;
     private JSONObject dataToAdd;
 
     public LogHandling() {
         newLog = new JSONArray();
     }
 
-    public JSONObject newEntry(int newID, double newTime) {
-        this.newID = newID;
+    public JSONObject newEntry(double newTime, double receivedTime) {
         this.newTime = newTime;
+        this.receivedTime = receivedTime;
         try {
             dataToAdd = new JSONObject();
-            dataToAdd.put(String.valueOf(newID), String.valueOf(newTime));
+            dataToAdd.put("sent", String.valueOf(newTime));
+            dataToAdd.put("received", String.valueOf(receivedTime));
         } catch (NullPointerException | JSONException e) {
             Log.e("TAG that wtf JSON", Log.getStackTraceString(e));
         }

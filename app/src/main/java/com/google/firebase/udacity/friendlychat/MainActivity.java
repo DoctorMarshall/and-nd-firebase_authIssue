@@ -94,9 +94,8 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference mChatPhotosStorageReference;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     public GetTiming mGetTiming;
-
-    //Beeper timed
-
+    private DatabaseReference mDatabase_Measure;
+    public int i;
 
 
     @Override
@@ -104,11 +103,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //TEST
+//        TEST
         final LogHandling logHandling = new LogHandling();
-        final JSONObject newObj = logHandling.newEntry(1, 123.123);
+        final JSONObject newObj = logHandling.newEntry(1, 1);
 
-        final GetTiming getTiming = new GetTiming();
+
 //        double timed = getTiming.giveTiming();
 
         Log.d("Json: ", newObj.toString());
@@ -116,29 +115,17 @@ public class MainActivity extends AppCompatActivity {
 
         //pool executor?
 
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-
-//        Log.v("TESTTTTTTTT: ", String.valueOf(timed));
-
-        scheduler.scheduleAtFixedRate
-                (new Runnable() {
-                    public void run() {
-                        long timed = getTiming.giveTiming();
-                        double seconds = timed / 1000000000.0;
-                        Log.d("Timing nano: ", String.valueOf(timed));
-                        Log.d("Timing seconds: ", String.valueOf(seconds));
-                    }
-                }, 0, 1000000000, TimeUnit.NANOSECONDS);
-
-
-        //Scheduled executor ????
-//        new Thread(new Runnable(){
-//            public void run() {
-//                Log.d("Thread executpr", "Thread ex");
-//            }
-//        }).start();
-
-
+        final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        final GetTiming getTiming = new GetTiming();
+//        scheduler.scheduleAtFixedRate
+//                (new Runnable() {
+//                    public void run() {
+//                        long timed = getTiming.giveTiming();
+//                        double seconds = timed / 1000000000.0;
+//                        Log.d("Timing nano: ", String.valueOf(timed));
+//                        Log.d("Timing seconds: ", String.valueOf(seconds));
+//                    }
+//                }, 0, 1000000000, TimeUnit.NANOSECONDS);
 
 
         mUsername = ANONYMOUS;
@@ -205,14 +192,34 @@ public class MainActivity extends AppCompatActivity {
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Send messages on click
                 FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername, null);
                 mMessageDatabaseReference.push().setValue(friendlyMessage);
+                i = 1;
+
+
+                final String testName = mMessageEditText.getText().toString();
+
+                mMessageDatabaseReference.child(testName).setValue("1");
+
+                scheduler.scheduleAtFixedRate
+                        (new Runnable() {
+                            public void run() {
+                                long timed = getTiming.giveTiming();
+                                double seconds = timed / 1000000000.0;
+
+                                Log.d("Timing nano: ", String.valueOf(timed));
+                                Log.d("Timing seconds: ", String.valueOf(seconds));
+
+                                FriendlyMessage friendlyMessage = new FriendlyMessage("", String.valueOf(seconds), null);
+                                mMessageDatabaseReference.child(testName).child(String.valueOf(i)).setValue(friendlyMessage);
+
+                                i = i + 1;
+
+                            }
+                        }, 0, 1000000000, TimeUnit.NANOSECONDS);
+
                 // Clear input box
                 mMessageEditText.setText("");
-
-                //Timer testing
-                GetTiming getTiming = new GetTiming();
             }
         });
 
@@ -326,10 +333,12 @@ public class MainActivity extends AppCompatActivity {
         if (mChildEventListener == null) {
             mChildEventListener = new ChildEventListener() {
                 @Override
+
+                //TODO - receive messages withour crashing the app!
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
-                    mMessageAdapter.add(friendlyMessage);
-                    Log.d("11111111111111111", "RECEIVED");
+//                    FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
+//                    mMessageAdapter.add(friendlyMessage);
+                    //Log.d("11111111111111111", "received");
                 }
 
                 @Override
