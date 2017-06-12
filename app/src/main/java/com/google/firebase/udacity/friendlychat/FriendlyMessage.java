@@ -17,33 +17,35 @@ package com.google.firebase.udacity.friendlychat;
 
 public class FriendlyMessage {
 
-    private String text;
-    private String name;
+    private String timeReceived;
+    private String timeSent;
     private String photoUrl;
 
     public FriendlyMessage() {
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl) {
-        this.text = text;
-        this.name = name;
+
+    public FriendlyMessage(String timeSent, String timeReceived, String photoUrl) {
+        this.timeSent = timeSent;
+        this.timeReceived = timeReceived;
         this.photoUrl = photoUrl;
     }
 
-    public String getText() {
-        return text;
+
+    public String getTimeReceived() {
+        return timeReceived;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setText(String timeReceived) {
+        this.timeReceived = timeReceived;
     }
 
-    public String getName() {
-        return name;
+    public String getTimeSent() {
+        return timeSent;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String timeSent) {
+        this.timeSent = timeSent;
     }
 
     public String getPhotoUrl() {

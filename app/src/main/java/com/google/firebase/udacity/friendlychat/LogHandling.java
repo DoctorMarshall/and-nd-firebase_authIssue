@@ -27,7 +27,7 @@ public class LogHandling {
         this.receivedTime = receivedTime;
         try {
             dataToAdd = new JSONObject();
-            dataToAdd.put("sent", String.valueOf(newTime));
+            dataToAdd.put(" Log_sent", String.valueOf(newTime));
             dataToAdd.put("received", String.valueOf(receivedTime));
         } catch (NullPointerException | JSONException e) {
             Log.e("TAG that wtf JSON", Log.getStackTraceString(e));

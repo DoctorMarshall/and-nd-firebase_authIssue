@@ -107,26 +107,11 @@ public class MainActivity extends AppCompatActivity {
         final LogHandling logHandling = new LogHandling();
         final JSONObject newObj = logHandling.newEntry(1, 1);
 
-
-//        double timed = getTiming.giveTiming();
-
         Log.d("Json: ", newObj.toString());
 
-
         //pool executor?
-
         final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         final GetTiming getTiming = new GetTiming();
-//        scheduler.scheduleAtFixedRate
-//                (new Runnable() {
-//                    public void run() {
-//                        long timed = getTiming.giveTiming();
-//                        double seconds = timed / 1000000000.0;
-//                        Log.d("Timing nano: ", String.valueOf(timed));
-//                        Log.d("Timing seconds: ", String.valueOf(seconds));
-//                    }
-//                }, 0, 1000000000, TimeUnit.NANOSECONDS);
-
 
         mUsername = ANONYMOUS;
 
@@ -192,15 +177,12 @@ public class MainActivity extends AppCompatActivity {
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername, null);
-                mMessageDatabaseReference.push().setValue(friendlyMessage);
+//                FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername, null);
+//                mMessageDatabaseReference.push().setValue(friendlyMessage);
                 i = 1;
-
-
                 final String testName = mMessageEditText.getText().toString();
-
                 mMessageDatabaseReference.child(testName).setValue("1");
-
+                attachDatabaseReadListener();
                 scheduler.scheduleAtFixedRate
                         (new Runnable() {
                             public void run() {
@@ -210,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("Timing nano: ", String.valueOf(timed));
                                 Log.d("Timing seconds: ", String.valueOf(seconds));
 
-                                FriendlyMessage friendlyMessage = new FriendlyMessage("", String.valueOf(seconds), null);
+                                FriendlyMessage friendlyMessage = new FriendlyMessage(String.valueOf(seconds), "", null);
                                 mMessageDatabaseReference.child(testName).child(String.valueOf(i)).setValue(friendlyMessage);
 
                                 i = i + 1;
@@ -220,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Clear input box
                 mMessageEditText.setText("");
+//                mMessageEditText.setActivated(false);
             }
         });
 
@@ -303,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void onSignedInInitialize(String username) {
         mUsername = username;
-        attachDatabaseReadListener();
+//        attachDatabaseReadListener();
 
     }
 
@@ -329,8 +312,12 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
+
     private void attachDatabaseReadListener() {
+        final GetTiming getTiming = new GetTiming();
+
         if (mChildEventListener == null) {
+            final String testName = mMessageEditText.getText().toString();
             mChildEventListener = new ChildEventListener() {
                 @Override
 
@@ -338,7 +325,17 @@ public class MainActivity extends AppCompatActivity {
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 //                    FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
 //                    mMessageAdapter.add(friendlyMessage);
-                    //Log.d("11111111111111111", "received");
+
+                    //"real time" data fetching
+                    String lastAddedID = dataSnapshot.getKey().toString();
+                    String lastAdded_Data = dataSnapshot.toString();
+                    Log.d("Snap_ID: ", lastAddedID);
+                    Log.d("Snap_Data: ", lastAdded_Data);
+
+//                    push received time to the database
+                    long receiveTime = getTiming.giveTiming();
+                    double secondsReceived = receiveTime / 1000000000.0;
+                    mMessageDatabaseReference.child(testName).child(String.valueOf(lastAddedID)).child("timeReceived").setValue(secondsReceived);
                 }
 
                 @Override
@@ -357,7 +354,11 @@ public class MainActivity extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {
                 }
             };
-            mMessageDatabaseReference.addChildEventListener(mChildEventListener);
+//            mMessageDatabaseReference.addChildEventListener(mChildEventListener);
+//            final String testName = mMessageEditText.getText().toString();
+            mMessageDatabaseReference.child(testName).addChildEventListener(mChildEventListener);
+
+
         }
     }
 

@@ -39,9 +39,9 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
         } else {
             messageTextView.setVisibility(View.VISIBLE);
             photoImageView.setVisibility(View.GONE);
-            messageTextView.setText(message.getText());
+            messageTextView.setText(message.getTimeReceived());
         }
-        authorTextView.setText(message.getName());
+        authorTextView.setText(message.getTimeSent());
 
         return convertView;
     }
