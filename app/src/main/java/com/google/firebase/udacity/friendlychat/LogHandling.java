@@ -20,6 +20,7 @@ public class LogHandling {
 
     public LogHandling() {
         newLog = new JSONArray();
+
     }
 
     public JSONObject newEntry(double newTime, double receivedTime) {

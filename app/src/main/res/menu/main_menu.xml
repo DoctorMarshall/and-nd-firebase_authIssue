@@ -5,4 +5,13 @@
         android:id="@+id/sign_out_menu"
         android:title="@string/sign_out"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/graph_latest_data"
+        android:title="Graph Latest"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/receiver_activate"
+        android:title="Activate listener mode"
+        app:showAsAction="never" />
+
 </menu>
