@@ -16,7 +16,6 @@
 package com.google.firebase.udacity.friendlychat;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -52,7 +51,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,13 +66,14 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     public static final String ANONYMOUS = "anonymous";
-    public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
     public static final int RC_SIGN_IN = 1;
-    private static final int RC_PHOTO_PICKER = 2;
+
+    public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
     public static final String FRIENDLY_MSG_LENGTH_KEY = "friendly_msg_length";
 
+
+    private static final int RC_PHOTO_PICKER = 2;
     private ListView mMessageListView;
-    private MessageAdapter mMessageAdapter;
     private ProgressBar mProgressBar;
     private ImageButton mPhotoPickerButton;
     private EditText mMessageEditText;
@@ -108,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         //pool executor?
         final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-//        final GetTiming getTiming = new GetTiming();
+
         final Logged Logged = new Logged();
         final AnalyzeData analyzeData = new AnalyzeData();
 
@@ -127,30 +126,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize references to views
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-//        mMessageListView = (ListView) findViewById(R.id.messageListView);
-//        mPhotoPickerButton = (ImageButton) findViewById(R.id.photoPickerButton);
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
         mSendButton = (Button) findViewById(R.id.sendButton);
-
-
-        // Initialize message ListView and its adapter
-//        final List<FriendlyMessage> friendlyMessages = new ArrayList<>();
-//        mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages);
-//        mMessageListView.setAdapter(mMessageAdapter);
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
-        // ImagePickerButton shows an image picker to upload a image for a message
-//        mPhotoPickerButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                intent.setType("image/jpeg");
-//                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-//                startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER);
-//            }
-//        });
         // Enable Send button when there's text to send
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -181,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 //Get experiment title from the text field
                 final String testName = mMessageEditText.getText().toString();
                 mMessageDatabaseReference.child(testName).setValue("1");
+
                 //Attach database listener right after getting the test name from the user
                 attachDatabaseReadListener();
                 //Generate test data
@@ -191,21 +173,14 @@ public class MainActivity extends AppCompatActivity {
                                 double seconds = timed / 1000000000.0;
 
                                 Logged logged = new Logged(i, seconds, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-//
-//                                Log.d("Timing nano: ", String.valueOf(timed));
-//                                Log.d("Timing seconds: ", String.valueOf(seconds));
-
-//                                FriendlyMessage friendlyMessage = new FriendlyMessage(String.valueOf(seconds), "", null);
                                 mMessageDatabaseReference.child(testName).child(String.valueOf(i)).setValue(logged);
 
                                 i = i + 1;
-
                             }
                         }, 0, 1000000000, TimeUnit.NANOSECONDS);
 
                 // Clear input box
                 mMessageEditText.setText("");
-//                mMessageEditText.setActivated(false);
             }
         });
 
@@ -231,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
                 .setDeveloperModeEnabled(BuildConfig.DEBUG)
                 .build();
@@ -242,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
         fetchConfig();
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -252,17 +229,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Signed in CANCELLED!", Toast.LENGTH_SHORT).show();
                 finish();
             }
-        } else if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
-            Uri selectImageUri = data.getData();
-            StorageReference photoRef = mChatPhotosStorageReference.child(selectImageUri.getLastPathSegment());
-
-            photoRef.putFile(selectImageUri).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                    Uri downloadUri = taskSnapshot.getDownloadUrl();
-//                    FriendlyMessage friendlyMessage = new FriendlyMessage(null, mUsername, downloadUri.toString());
-//                    mMessageDatabaseReference.push().setValue(friendlyMessage);
-                }
-            });
         }
     }
 
@@ -282,15 +248,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.graph_latest_data:
-//                AuthUI.getInstance().signOut(this);
-                //TODO: add graph view here
-//                TODO: data download here
                 attachDataListenerSingleGet();
             case R.id.receiver_activate:
-//                AuthUI.getInstance().signOut(this);
                 attachDataListenerReceiverGet();
-
-//                Toast.makeText(MainActivity.this, "Here's the graph!", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return onOptionsItemSelected(item);
@@ -300,24 +260,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void onSignedInInitialize(String username) {
         mUsername = username;
-//        attachDatabaseReadListener();
-
     }
 
     private void onSignedOutCleanup() {
         mUsername = ANONYMOUS;
-//        mMessageAdapter.clear();
         detachDatabaseReadListener();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        if (mAuthStateListener != null) {
-//            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
-//        }
-//        detachDatabaseReadListener();
-//        mMessageAdapter.clear();
     }
 
     @Override
@@ -328,88 +280,46 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void attachDatabaseReadListener() {
-//        final GetTiming getTiming = new GetTiming();
-
         if (mChildEventListener == null) {
-//            TODO: is this necessary? i think it is but xd
             final String testName = mMessageEditText.getText().toString();
             mChildEventListener = new ChildEventListener() {
                 @Override
+                //updating time for self-ping
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                    FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
-//                    mMessageAdapter.add(friendlyMessage);
-
                     final GetTiming getTiming = new GetTiming();
-//                    push received time to the database
+                    //received time for the database
                     long receiveTime = getTiming.giveTiming();
                     double secondsReceived = receiveTime / 1000000000.0;
-
-                    //"real time" data fetching
+                    //"real time" data assign
                     Logged logged = dataSnapshot.getValue(Logged.class);
                     String lastAddedID = dataSnapshot.getKey().toString();
-//                    String lastAdded_Data = dataSnapshot.toString();
-//                    Log.d("Snap_ID: ", lastAddedID);
-//                    Log.d("Snap_Data: ", lastAdded_Data);
-
-//                    Log.d("Snap_Data: ", String.valueOf(logged.timeSent));
-//                    Log.d("Snap_Data: ", String.valueOf(logged.timeReceived));
-//                    Log.d("Snap_Data: ", String.valueOf(logged.receivedAt));
-//
-//                    Log.d("Snap_Data: ", String.valueOf(logged.timeSent != 0.0));
-//                    Log.d("Snap_Data: ", String.valueOf(logged.timeReceived != 0.0));
-//                    Log.d("Snap_Data: ", String.valueOf(logged.receivedAt != 0.0));
-
-
                     if (logged.timeReceived == 0.0) {
                         mMessageDatabaseReference.child(testName).child(String.valueOf(lastAddedID)).child("timeReceived").setValue(secondsReceived);
                     }
                 }
-
                 @Override
+                //updating time for listener mode
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                     final GetTiming getTiming = new GetTiming();
-//                    push received time to the database
                     long receiveTime = getTiming.giveTiming();
                     double secondsReceived = receiveTime / 1000000000.0;
-
-                    //"real time" data fetching
                     Logged logged = dataSnapshot.getValue(Logged.class);
                     String lastAddedID = dataSnapshot.getKey().toString();
-
-                    Log.d("Snap_Data: ", String.valueOf(logged.timeSent));
-                    Log.d("Snap_Data: ", String.valueOf(logged.timeReceived));
-                    Log.d("Snap_Data: ", String.valueOf(logged.receivedAt));
-                    Log.d("Snap_Data: ", String.valueOf(logged.timeThroughReceiver));
-
-                    Log.d("Snap_Data: ", String.valueOf(logged.timeSent != 0.0));
-                    Log.d("Snap_Data: ", String.valueOf(logged.timeReceived != 0.0));
-                    Log.d("Snap_Data: ", String.valueOf(logged.receivedAt != 0.0));
-                    Log.d("Snap_Data: ", String.valueOf(logged.timeThroughReceiver != 0.0));
-
-
-                    //TODO: FLAWED! change how to get chang eof value
                     if (logged.timeSent != 0.0 & logged.timeReceived != 0.0 & logged.receivedAt != 0.0 & logged.timeThroughReceiver == 0.0) {
                         mMessageDatabaseReference.child(testName).child(String.valueOf(lastAddedID)).child("timeThroughReceiver").setValue(secondsReceived);
                     }
                 }
-
                 @Override
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
                 }
-
                 @Override
                 public void onChildMoved(DataSnapshot dataSnapshot, String s) {
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
             };
-//            mMessageDatabaseReference.addChildEventListener(mChildEventListener);
-//            final String testName = mMessageEditText.getText().toString();
             mMessageDatabaseReference.child(testName).limitToLast(2).addChildEventListener(mChildEventListener);
-
-
         }
     }
 
@@ -456,7 +366,6 @@ public class MainActivity extends AppCompatActivity {
             mChildEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
                     //"real time" data fetching
                     Logged logged = dataSnapshot.getValue(Logged.class);
                     double latency = logged.timeReceived - logged.timeSent;
@@ -470,11 +379,6 @@ public class MainActivity extends AppCompatActivity {
                         twoWayLatencies.add(twoWayLatency);
                         phone2Received.add(logged.receivedAt);
                     }
-
-
-//                Log.d("GruboID", String.valueOf(logged.itemID));
-//                Log.d("TimeSent", String.valueOf(logged.timeSent));
-//                Log.d("TimeReceived", String.valueOf(logged.timeSent));
                     mMessageDatabaseReference.child(testName).child(String.valueOf(logged.itemID)).child("latency").setValue(latency);
                     latencies.add(latency);
 

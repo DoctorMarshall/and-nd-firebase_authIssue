@@ -1,14 +1,10 @@
 package com.google.firebase.udacity.friendlychat;
-
 import java.util.ArrayList;
 import java.util.Collections;
-
 /**
  * Created by Marshall on 13/06/2017.
  */
-
 public class AnalyzeData {
-
     public ArrayList<Double> latencies;
     public ArrayList<Double> twoWayLatencies;
     public double average;
@@ -16,14 +12,10 @@ public class AnalyzeData {
     public double latencyMax;
     public static ArrayList<Double> phone2ReceivedDifferences = new ArrayList<>();
 
-
     public AnalyzeData() {
-        // Default constructor required for calls to DataSnapshot.getValue(User.class)
-
     }
 
     public double getAverage(ArrayList<Double> latencies) {
-
         if (latencies == null || latencies.isEmpty()) {
             return 0;
         }
@@ -33,7 +25,6 @@ public class AnalyzeData {
             sum += latency;
         }
         average = sum / latencies.size();
-
         return average;
     }
 
@@ -53,14 +44,10 @@ public class AnalyzeData {
         return latencyMax;
     }
 
-    //extension
-
-
     public double getReceivedTimeDifference(ArrayList<Double> latencies) {
         if (latencies == null || latencies.isEmpty()) {
             return 0;
         }
-
         double diff = 0;
         double sum = 0;
         double averageLatency = 0;

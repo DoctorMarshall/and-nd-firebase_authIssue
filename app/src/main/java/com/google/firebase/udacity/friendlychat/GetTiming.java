@@ -5,7 +5,6 @@ package com.google.firebase.udacity.friendlychat;
  */
 
 public class GetTiming {
-
     long startTime = 0;
 
     public GetTiming() {
@@ -15,6 +14,4 @@ public class GetTiming {
         long startTime = System.nanoTime();
         return startTime;
     }
-
-
 }
